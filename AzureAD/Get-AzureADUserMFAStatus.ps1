@@ -1,4 +1,5 @@
 <#
+.DESCRIPTION 
 =============================================================================================
 Name:           Export Office 365 users' MFA status using Microsoft Graph PowerShell
 Description:    This script exports O365 users MFA status report to CSV file
@@ -43,7 +44,7 @@ Function Connect_MgGraph
   Disconnect-MgGraph
  }
  #Connecting to MgGraph beta
- Select-MgProfile -Name beta
+ #Select-MgProfile -Name beta
  Write-Host Connecting to Microsoft Graph...
  Connect-MgGraph -Scopes "User.Read.All","UserAuthenticationMethod.Read.All"
 }

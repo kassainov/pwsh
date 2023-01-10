@@ -70,6 +70,7 @@ Do
         -Blob $BlobName
     
     # Removing blobs by bunch of 1000 blobs
+    Write-Output "Processing removal..."
     $blobs | Remove-AzStorageBlob
     
     # Loop through the bunch if needed more info, but more slower.
@@ -90,7 +91,10 @@ Do
     $total += $blobs.Count
     
     # Exit if all blobs processed
-    If($blobs.Length -le 0) { Break; }
+    If($blobs.Length -le 0) { 
+        Write-Output "Completed."
+        Break; 
+    }
     
     # Set continuation token to retrieve the next batch
     $token = $blobs[$blobs.Count -1].ContinuationToken

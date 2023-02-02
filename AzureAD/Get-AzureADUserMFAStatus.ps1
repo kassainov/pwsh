@@ -61,19 +61,13 @@ $ExportCount=0
  $Results=@()
 
 #Get all users
-Get-MgUser -All -Filter "UserType eq 'Member'" | foreach {
+Get-MgUser -All -Filter "accountEnabled eq true" | ForEach-Object {
  $ProcessedUserCount++
  $Name= $_.DisplayName
  $UPN=$_.UserPrincipalName
  $Department=$_.Department
- if($_.AccountEnabled -eq $true)
- {
-  $SigninStatus="Allowed"
- }
- else
- {
-  $SigninStatus="Blocked"
- }
+ $SigninStatus="Allowed"
+ 
  if(($_.AssignedLicenses).Count -ne 0)
  {
   $LicenseStatus="Licensed"

@@ -1,0 +1,1 @@
+# The scripts  here contains custom compliance check and custom app detection scripts used in Intune

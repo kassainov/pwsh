@@ -4,9 +4,12 @@
 #>
 
 try {
-    Remove-Item HKLM:\Software\Policies\Microsoft\Windows\WindowsUpdate -Recurse
+    Remove-Item HKLM:\Software\Policies\Microsoft\Windows\WindowsUpdate -Recurse -ErrorAction Stop
     Write-Host "WSUS settings removed"
 }
-catch {
+catch [System.Management.Automation.ItemNotFoundException] {
     Write-Host "WSUS settings is not there"
+}
+catch {
+    Write-Error "Error while removing registry value"
 }

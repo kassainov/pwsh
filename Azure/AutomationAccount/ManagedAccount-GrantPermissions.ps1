@@ -26,14 +26,16 @@ param(
     [Parameter()]
     [String] $AppId = "00000003-0000-0000-c000-000000000000"
 )
- 
 
 # Install the module
 if (!(Get-InstalledModule -Name AzureAD -ErrorAction SilentlyContinue)){
     Install-Module AzureAD
 }
 
-Connect-AzureAD
+# Login to Azure AD if not already logged in.
+if (!(Get-AzureADTenantDetail -ErrorAction SilentlyContinue)){
+    Connect-AzureAD
+}
 
 # Getting service principal object of Managed Identity
 $MSI = (Get-AzureADServicePrincipal -Filter "displayName eq '$Identity'")

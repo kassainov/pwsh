@@ -1,18 +1,41 @@
 <#
     .DESCRIPTION
-    Automated script to backup Intune policies and apps
+    Automated script to backup Intune policies and apps via Azure Automation Account runbook.
+
+    Prerequisites:
+    The script requires the next modules to be imported:
+        Microsoft.Graph.Intune
+        IntuneBackupAndRestore
+    
+    Also you need to register an Application in Azure AD and provide the next permissions for the application to Microsoft Graph.
+        "DeviceManagementApps.ReadWrite.All"
+        "DeviceManagementConfiguration.ReadWrite.All"
+
+    Save client secret of the application in a secret variable in Azure Automation account.
+
+    Provide "Storage Blob Container Contributor" role for System Managed Identity of Azure Automation Account.
+    
+    Ensure that the Sotrage account allow connection from all networks.
 
     .PARAMETER StorageAccountName
     Name of storage account where to store backups
     Default value: "wfintunebackup"
 
-    .PARAMETER RGName
-    Storage account Resource group
-    Default value: "wf-rg-it-automationaccount"
-
     .PARAMETER ContainerName
     Blob container name
     Default value: "backup"
+
+    .PARAMETER ClientId
+    ID of an Application registered in Azure AD
+
+    .PARAMETER TenantId
+    Azure AD Tenant ID
+
+    .PARAMETER apiVersion
+    Set default MS Graph API version for calls.
+    Two values are taken: Beta or v1.0
+    Default value: "Beta"
+
 #>
 
 
@@ -26,6 +49,7 @@ param (
     [Parameter()]
     [string] $TenantId = "tenant_id",
     [Parameter()]
+    [ValidateSet("v1.0", "Beta")]
     [string] $apiVersion = "Beta"
 )
 

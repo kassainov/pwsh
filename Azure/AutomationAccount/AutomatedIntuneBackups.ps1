@@ -4,12 +4,12 @@
 
     Prerequisites:
     The script requires the next modules to be imported:
-        Microsoft.Graph.Intune
-        IntuneBackupAndRestore
+        - Microsoft.Graph.Intune
+        - IntuneBackupAndRestore
     
     Also you need to register an Application in Azure AD and provide the next permissions for the application to Microsoft Graph.
-        "DeviceManagementApps.ReadWrite.All"
-        "DeviceManagementConfiguration.ReadWrite.All"
+        - "DeviceManagementApps.ReadWrite.All"
+        - "DeviceManagementConfiguration.ReadWrite.All"
 
     Save client secret of the application in a secret variable in Azure Automation account.
 

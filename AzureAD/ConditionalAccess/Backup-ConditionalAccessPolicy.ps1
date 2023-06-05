@@ -9,7 +9,11 @@
 
 param(
     [Parameter(Mandatory)]
-    [String] $Path
+    [String] $Path,
+    [Parameter(Mandatory)]
+    [Switch] $OnlyNamedLocations,
+    [Parameter(Mandatory)]
+    [Switch] $OnlyPolicies
 )
 
 #######################################
@@ -36,15 +40,16 @@ function createSubFolder {
 ####    Backup Names locations     ####
 #######################################
 try {
-    $namedLocations = Get-MgIdentityConditionalAccessNamedLocation -All -Property Id, displayName
-    $folderName = "Named Locations"
-    createSubFolder($folderName)
-
-    foreach ($namedLocation in $namedLocations) {
-        $fileName = ($namedLocation.displayName).Split([IO.Path]::GetInvalidFileNameChars()) -join '_'
-        Get-MgIdentityConditionalAccessNamedLocation -NamedLocationId $namedLocation.Id -ErrorAction Stop | `
-            ConvertTo-Json -Depth 100 | Out-File "$Path\$folderName\$fileName.json" 
-        Write-Output "$fileName backup was created"
+    if (!($OnlyPolicies)) {
+        $namedLocations = Get-MgIdentityConditionalAccessNamedLocation -All -Property Id, displayName
+        $folderName = "Named Locations"
+        createSubFolder($folderName)
+        foreach ($namedLocation in $namedLocations) {
+            $fileName = ($namedLocation.displayName).Split([IO.Path]::GetInvalidFileNameChars()) -join '_'
+            Get-MgIdentityConditionalAccessNamedLocation -NamedLocationId $namedLocation.Id -ErrorAction Stop | `
+                ConvertTo-Json -Depth 100 | Out-File "$Path\$folderName\$($namedLocation.Id)$fileName.json" 
+            Write-Output "$fileName backup was created"
+        }
     }
 }
 catch {
@@ -56,15 +61,17 @@ catch {
 ###          Backup policies       ####
 #######################################
 try {
-    $policies = Get-MgIdentityConditionalAccessPolicy -All -Property Id, displayName
-    $folderName = "Conditional Access Policies"
-    createSubFolder($folderName)
+    if (!($OnlyNamedLocations)) {
+        $policies = Get-MgIdentityConditionalAccessPolicy -All -Property Id, displayName
+        $folderName = "Conditional Access Policies"
+        createSubFolder($folderName)
 
-    foreach ($policy in $policies) {
-        $fileName = ($policy.displayName).Split([IO.Path]::GetInvalidFileNameChars()) -join '_'
-        Get-MgIdentityConditionalAccessPolicy -ConditionalAccessPolicyId $policy.Id -ErrorAction Stop | `
-            ConvertTo-Json -Depth 100 | Out-File "$Path\$folderName\$fileName.json"
-        Write-Output "$fileName backup was created"
+        foreach ($policy in $policies) {
+            $fileName = ($policy.displayName).Split([IO.Path]::GetInvalidFileNameChars()) -join '_'
+            Get-MgIdentityConditionalAccessPolicy -ConditionalAccessPolicyId $policy.Id -ErrorAction Stop | `
+                ConvertTo-Json -Depth 100 | Out-File "$Path\$folderName\$($policy.Id)-$fileName.json"
+            Write-Output "$fileName backup was created"
+        }
     }
 }
 catch {

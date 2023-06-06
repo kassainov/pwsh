@@ -4,6 +4,12 @@
 
     .PARAMETER Path
     Specify full path to bakup folder
+
+    .PARAMETER OnlyNamedLocations
+    Enable this to backup only Named Locations
+
+    .PARAMETER OnlyPolicies
+    Enable this to backup only Conditional Access Policies
 #>
 
 

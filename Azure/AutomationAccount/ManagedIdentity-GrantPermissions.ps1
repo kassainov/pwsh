@@ -29,7 +29,7 @@ param(
 
 # Install the module
 if (!(Get-InstalledModule -Name AzureAD -ErrorAction SilentlyContinue)){
-    Install-Module AzureAD
+    Install-Module -Name AzureAD -Force
 }
 
 # Login to Azure AD if not already logged in.
@@ -38,8 +38,18 @@ if (!(Get-AzureADTenantDetail -ErrorAction SilentlyContinue)){
 }
 
 # Getting service principal object of Managed Identity
-$MSI = (Get-AzureADServicePrincipal -Filter "displayName eq '$Identity'")
-Start-Sleep -Seconds 10
+try {
+    $MSI = (Get-AzureADServicePrincipal -Filter "displayName eq '$Identity'")
+    Start-Sleep -Seconds 3
+    if (!($MSI)) {
+        Write-Output "Please specify corect name for Managed Identity"
+        Throw "Managed Identity was not found"
+    }
+}
+catch {
+    Write-Error $_
+    exit 1
+}
 
 # Getting service principal object of the applciation
 $GraphServicePrincipal = Get-AzureADServicePrincipal -Filter "appId eq '$AppId'"

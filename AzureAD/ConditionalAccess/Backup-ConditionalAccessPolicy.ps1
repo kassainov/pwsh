@@ -16,9 +16,9 @@
 param(
     [Parameter(Mandatory)]
     [String] $Path,
-    [Parameter(Mandatory)]
+    [Parameter()]
     [Switch] $OnlyNamedLocations,
-    [Parameter(Mandatory)]
+    [Parameter()]
     [Switch] $OnlyPolicies
 )
 
@@ -28,6 +28,7 @@ param(
 Connect-MgGraph -Scope "Policy.Read.All"
 Select-MgProfile -Name "beta"
 Write-Output "Successfully connected to MS Graph"
+Start-Sleep -Seconds 10
 
 #######################################
 ####    Create folders structure   ####
@@ -47,13 +48,13 @@ function createSubFolder {
 #######################################
 try {
     if (!($OnlyPolicies)) {
-        $namedLocations = Get-MgIdentityConditionalAccessNamedLocation -All -Property Id, displayName
+        $namedLocations = Get-MgIdentityConditionalAccessNamedLocation -All -Property Id, displayName -ErrorAction Stop
         $folderName = "Named Locations"
         createSubFolder($folderName)
         foreach ($namedLocation in $namedLocations) {
             $fileName = ($namedLocation.displayName).Split([IO.Path]::GetInvalidFileNameChars()) -join '_'
             Get-MgIdentityConditionalAccessNamedLocation -NamedLocationId $namedLocation.Id -ErrorAction Stop | `
-                ConvertTo-Json -Depth 100 | Out-File "$Path\$folderName\$($namedLocation.Id)$fileName.json" 
+                ConvertTo-Json -Depth 100 | Out-File "$Path\$folderName\$($namedLocation.Id)-$fileName.json" 
             Write-Output "$fileName backup was created"
         }
     }
@@ -68,9 +69,9 @@ catch {
 #######################################
 try {
     if (!($OnlyNamedLocations)) {
-        $policies = Get-MgIdentityConditionalAccessPolicy -All -Property Id, displayName
         $folderName = "Conditional Access Policies"
         createSubFolder($folderName)
+        $policies = Get-MgIdentityConditionalAccessPolicy -All -Property Id, displayName -ErrorAction Stop
 
         foreach ($policy in $policies) {
             $fileName = ($policy.displayName).Split([IO.Path]::GetInvalidFileNameChars()) -join '_'

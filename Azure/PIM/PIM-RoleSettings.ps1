@@ -1,20 +1,25 @@
 <#
     .DESCRIPTION
-    Forst draft of the script that 
+    First draft of the script that 
     
     - Sets approvers, need to pass AzureAD user IDs as parameters
     - Enables MFA requirement, justification requirement
     - Sets activation duration to 4 hours
 
     Pass list of DisplayName roles to be changed via C:\Temp\Roles.txt
+
+    Additional docs: 
+    https://learn.microsoft.com/en-us/graph/api/resources/unifiedrolemanagementpolicy?view=graph-rest-1.0
+    https://learn.microsoft.com/en-us/graph/how-to-pim-update-rules?tabs=http
 #>
 
 param (
-    [Parameter(Mandatory)]
-    [String] $UserId,
-    [Parameter(Mandatory)]
-    [String] $UserId2
+    [Parameter()]
+    [String] $ApproverId
 )
+Connect-MgGraph -Scope "RoleManagement.Read.All","RoleManagementPolicy.ReadWrite.Directory","RoleManagement.ReadWrite.Directory"
+Select-MgProfile -Name "v1.0"
+Start-Sleep -Seconds 3
 
 # update Azure AD role settings
 $RoleDefinitions = Get-MgRoleManagementDirectoryRoleDefinition -Property Id,displayName
@@ -60,13 +65,8 @@ foreach ($Role in $RolesWithApprover) {
                         primaryApprovers = @(
                             @{
                                 "@odata.type" = "#microsoft.graph.singleUser"
-                                userId = $UserId
+                                userId = $ApproverId
                             }
-                            @{
-                                "@odata.type" = "#microsoft.graph.singleUser"
-                                userId = $UserId2
-                            }
-
                         )
                         isEscalationEnabled = $false
                         escalationApprovers = @(

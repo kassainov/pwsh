@@ -9,7 +9,7 @@
     List of admin user UPN comma separated
 
     .EXAMPLE
-    PIM-RoleAssignment.ps1 -Path C:\Temp\ROle-Group.csv -Admins 'admin@contoso.onmicrosoft.com','admin2@contoso.onmicrosoft.com'
+    PIM-RoleAssignment.ps1 -Path C:\Temp\Role-Group.csv -Admins 'admin@contoso.onmicrosoft.com','admin2@contoso.onmicrosoft.com'
 
 #>
 
